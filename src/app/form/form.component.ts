@@ -1,4 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import {
+  CollectionReference,
+  Firestore,
+  addDoc,
+  collection,
+} from '@angular/fire/firestore';
 import {
   FormControl,
   FormGroup,
@@ -7,7 +13,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { tuiMarkControlAsTouchedAndValidate } from '@taiga-ui/cdk';
-import { TuiButtonModule } from '@taiga-ui/core';
+import {
+  TuiAlertModule,
+  TuiAlertService,
+  TuiButtonModule,
+  TuiRootModule,
+} from '@taiga-ui/core';
 import { TuiSliderModule, TuiTextareaModule } from '@taiga-ui/kit';
 
 @Component({
@@ -19,12 +30,17 @@ import { TuiSliderModule, TuiTextareaModule } from '@taiga-ui/kit';
     TuiSliderModule,
     TuiTextareaModule,
     TuiButtonModule,
+    TuiRootModule,
+    TuiAlertModule,
   ],
   templateUrl: './form.component.html',
   styleUrl: './form.component.less',
 })
 export class FormComponent {
+  private readonly firestore: Firestore = inject(Firestore);
+  private readonly alerts: TuiAlertService = inject(TuiAlertService);
   readonly grades = [1, 2, 3, 4, 5];
+  feedbackCollection: CollectionReference;
 
   form = new FormGroup({
     grade: new FormControl<number>(1, Validators.required),
@@ -32,13 +48,35 @@ export class FormComponent {
     negatives: new FormControl<string>('', Validators.required),
   });
 
+  constructor() {
+    this.feedbackCollection = collection(this.firestore, 'feedback');
+  }
+
   setGrade(grade: number) {
     this.form.patchValue({ grade });
   }
 
   submit() {
     if (this.form.valid) {
-      console.log(this.form.value);
+      const formControls = this.form.controls;
+
+      addDoc(this.feedbackCollection, {
+        grade: formControls.grade.value,
+        positives: formControls.positives.value,
+        negatives: formControls.negatives.value,
+      }).then(() => {
+        this.form.reset({
+          grade: 1,
+          positives: '',
+          negatives: ''
+        });
+
+        this.alerts
+          .open('Отзыв успешно отправлен', {
+            status: 'success',
+          })
+          .subscribe();
+      });
     } else {
       tuiMarkControlAsTouchedAndValidate(this.form);
     }

@@ -1,5 +1,18 @@
+<h5 class="tui-text_h5">Статистика отзывов</h5>
+
+<h6 class="tui-text_h6">Оценки</h6>
+
+<tui-ring-chart [value]="chartValues" [(activeItemIndex)]="index" size="xl">
+  <div>{{ sum }}</div>
+  <div>{{ label }}</div>
+</tui-ring-chart>
+
+<h6 class="tui-text_h6">Что понравилось студентам</h6>
 @for (item of items$ | async; track $index) {
-<p>grade {{ item.grade }}</p>
-<p>positives {{ item.positives }}</p>
-<p>negatives {{ item.negatives }}</p>
+<div class="tui-space_bottom-2">{{ item.positives }}</div>
+}
+
+<h6 class="tui-text_h6">Что можно улучшить</h6>
+@for (item of items$ | async; track $index) {
+<div class="tui-space_bottom-2">{{ item.negatives }}</div>
 }
