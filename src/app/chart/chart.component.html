@@ -1,1 +1,5 @@
-<p>chart works!</p>
+@for (item of items$ | async; track $index) {
+<p>grade {{ item.grade }}</p>
+<p>positives {{ item.positives }}</p>
+<p>negatives {{ item.negatives }}</p>
+}
