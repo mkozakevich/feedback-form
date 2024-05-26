@@ -1,1 +1,36 @@
-<p>form works!</p>
+<h5 class="tui-text_h6">Форма обратной связи</h5>
+<h4 class="tui-text_h6">Курс "Операционные системы"</h4>
+
+<form [formGroup]="form" class="tui-space_top-10" (ngSubmit)="submit()">
+  <p class="tui-text_body-l">Оцените курс</p>
+  <p>
+    По шкале от 1 до 5, где 1 - крайне неэффективный курс, 5 - крайне
+    эффективный курс
+  </p>
+  <input
+    size="m"
+    tuiSlider
+    type="range"
+    formControlName="grade"
+    [min]="1"
+    [max]="5"
+    [step]="1"
+  />
+  <div class="labels">
+    @for (grade of grades; track $index) {
+    <button type="button" class="label" (click)="setGrade(grade)">
+      {{ grade }}
+    </button>
+    }
+  </div>
+
+  <tui-textarea formControlName="positives" class="tui-space_top-10"
+    >Что вам понравилось в курсе?</tui-textarea
+  >
+
+  <tui-textarea formControlName="negatives" class="tui-space_top-10"
+    >Что можно было бы улучшить?</tui-textarea
+  >
+
+  <button tuiButton type="submit" class="tui-space_top-10">Отправить</button>
+</form>
